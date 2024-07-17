@@ -131,6 +131,21 @@ class Table {
         } else if (typeof options.rightPadding !== "undefined") {
             throw TypeError("rightPadding must be a number or undefined");
         }
+
+        this.rows = [];
+    }
+
+    addRow(row) {
+        if (typeof row === "undefined") row = [];
+        if (!Array.isArray(row)) row = [row];
+        for (var i = 0; i < row.length; i++) {
+            row[i] = String(row[i]);
+        }
+        this.rows.push(row);
+    }
+
+    get() {
+        return this.rows;
     }
 }
 
