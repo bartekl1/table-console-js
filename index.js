@@ -235,6 +235,22 @@ class Table {
     addHorizontalLine() {
         this.rows.push("HORIZONTAL LINE");
     }
+
+    getCell(col, row) {
+        if (row >= this.rows.length) throw RangeError("row number out of range");
+        if (this.rows[row] === "HORIZONTAL LINE") throw SyntaxError("this row is horizontal line");
+        var rowContent = this.getRows()[row];
+        if (col >= rowContent.length) throw RangeError("column number out of range");
+        return rowContent[col];
+    }
+
+    setCell(col, row, value) {
+        if (row >= this.rows.length) throw RangeError("row number out of range");
+        if (this.rows[row] === "HORIZONTAL LINE") throw SyntaxError("this row is horizontal line");
+        var rowContent = this.getRows()[row];
+        if (col >= rowContent.length) throw RangeError("column number out of range");
+        this.rows[row][col] = String(value);
+    }
 }
 
 module.exports = Table;
