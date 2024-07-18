@@ -155,6 +155,18 @@ class Table {
         }
         this.rows = this.rows.concat(rows);
     }
+
+    getRows() {
+        var cols = 0;
+        this.rows.forEach((row) => { if (row.length > cols) cols = row.length });
+        var rows = [];
+        this.rows.forEach((row) => {
+            var newRow = [...row];
+            while (newRow.length < cols) newRow.push("");
+            rows.push(newRow);
+        });
+        return rows;
+    }
 }
 
 module.exports = Table;
