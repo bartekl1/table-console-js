@@ -144,6 +144,11 @@ class Table {
         this.rows.push(row);
     }
 
+    removeRow(row) {
+        if (row >= this.rows.length || row < -this.rows.length) throw RangeError("row number out of range");
+        this.rows.splice(row, 1);
+    }
+
     insertRows(rows) {
         if (typeof rows === "undefined") rows = [[]];
         if (!Array.isArray(rows)) throw TypeError("rows must be an array");
