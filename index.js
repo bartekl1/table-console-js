@@ -158,12 +158,14 @@ class Table {
 
     getRows() {
         var cols = 0;
-        this.rows.forEach((row) => { if (row.length > cols) cols = row.length });
+        this.rows.forEach((row) => { if (row.length > cols && row !== "HORIZONTAL LINE") cols = row.length });
         var rows = [];
         this.rows.forEach((row) => {
-            var newRow = [...row];
-            while (newRow.length < cols) newRow.push("");
-            rows.push(newRow);
+            if (row !== "HORIZONTAL LINE") {
+                var newRow = [...row];
+                while (newRow.length < cols) newRow.push("");
+                rows.push(newRow);
+            } else rows.push("HORIZONTAL LINE");
         });
         return rows;
     }
@@ -197,12 +199,21 @@ class Table {
         }
         if (table.length > 1) {
             for (var i = 1; i < table.length; i++) {
-                stringTable += "\n";
-                for (var j = 0; j < table[i].length; j++) {
-                    stringTable += this.borders.sep + " ".repeat(this.leftPadding) + table[i][j] + " ".repeat(columnsLengths[j] - table[i][j].length) + " ".repeat(this.rightPadding);
-                }
-                stringTable += this.borders.sep;
-                if (this.horizontalLines && i < table.length - 1) {
+                if (table[i] !== "HORIZONTAL LINE") {
+                    stringTable += "\n";
+                    for (var j = 0; j < table[i].length; j++) {
+                        stringTable += this.borders.sep + " ".repeat(this.leftPadding) + table[i][j] + " ".repeat(columnsLengths[j] - table[i][j].length) + " ".repeat(this.rightPadding);
+                    }
+                    stringTable += this.borders.sep;
+                    if (this.horizontalLines && i < table.length - 1) {
+                        stringTable += "\n" + this.borders.midLeft;;
+                        for (var j = 0; j < columnsLengths.length; j++) {
+                            stringTable += this.borders.mid.repeat(columnsLengths[j] + this.leftPadding + this.rightPadding);
+                            if (j < columnsLengths.length - 1) stringTable += this.borders.midMid;
+                            else stringTable += this.borders.midRight;
+                        }
+                    }
+                } else {
                     stringTable += "\n" + this.borders.midLeft;;
                     for (var j = 0; j < columnsLengths.length; j++) {
                         stringTable += this.borders.mid.repeat(columnsLengths[j] + this.leftPadding + this.rightPadding);
@@ -219,6 +230,10 @@ class Table {
             else stringTable += this.borders.botRight;
         }
         return stringTable;
+    }
+
+    addHorizontalLine() {
+        this.rows.push("HORIZONTAL LINE");
     }
 }
 
