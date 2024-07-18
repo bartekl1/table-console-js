@@ -135,7 +135,7 @@ class Table {
         this.rows = [];
     }
 
-    addRow(row) {
+    insertRow(row) {
         if (typeof row === "undefined") row = [];
         if (!Array.isArray(row)) row = [row];
         for (var i = 0; i < row.length; i++) {
@@ -144,7 +144,7 @@ class Table {
         this.rows.push(row);
     }
 
-    addRows(rows) {
+    insertRows(rows) {
         if (typeof rows === "undefined") rows = [[]];
         if (!Array.isArray(rows)) throw TypeError("rows must be an array");
         for (var i = 0; i < rows.length; i++) {
@@ -232,7 +232,7 @@ class Table {
         return stringTable;
     }
 
-    addHorizontalLine() {
+    insertHorizontalLine() {
         this.rows.push("HORIZONTAL LINE");
     }
 
