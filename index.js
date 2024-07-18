@@ -144,8 +144,16 @@ class Table {
         this.rows.push(row);
     }
 
-    get() {
-        return this.rows;
+    addRows(rows) {
+        if (typeof rows === "undefined") rows = [[]];
+        if (!Array.isArray(rows)) throw TypeError("rows must be an array");
+        for (var i = 0; i < rows.length; i++) {
+            if (!Array.isArray(rows[i])) rows[i] = [rows[i]];
+            for (var j = 0; j < rows[i].length; j++) {
+                rows[i][j] = String(rows[i][j]);
+            }
+        }
+        this.rows = this.rows.concat(rows);
     }
 }
 
