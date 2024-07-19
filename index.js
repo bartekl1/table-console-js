@@ -49,9 +49,11 @@ const codesANSI = {
     },
 };
 
-function getCellText(content, colWidth, cellAttrs) {
+function getCellText(content, colWidth, cellAttrs, rowAttrs, colAttrs) {
     var attrs;
     if (typeof cellAttrs === "object") attrs = cellAttrs;
+    else if (typeof rowAttrs === "object") attrs = rowAttrs;
+    else if (typeof colAttrs === "object") attrs = colAttrs;
     else attrs = {};
 
     var columnStr = "";
@@ -264,7 +266,7 @@ class Table {
         if (table.length > 0) {
             stringTable += "\n";
             for (var i = 0; i < table[0].length; i++) {
-                stringTable += this.borders.sep + " ".repeat(this.leftPadding) + getCellText(table[0][i], columnsLengths[i], this.attrs[`cell:${0},${i}`]) + " ".repeat(this.rightPadding);
+                stringTable += this.borders.sep + " ".repeat(this.leftPadding) + getCellText(table[0][i], columnsLengths[i], this.attrs[`cell:${0},${i}`], this.attrs[`row:${0}`], this.attrs[`col:${i}`]) + " ".repeat(this.rightPadding);
             }
             stringTable += this.borders.sep;
         }
@@ -281,7 +283,7 @@ class Table {
                 if (table[i] !== "HORIZONTAL LINE") {
                     stringTable += "\n";
                     for (var j = 0; j < table[i].length; j++) {
-                        stringTable += this.borders.sep + " ".repeat(this.leftPadding) + getCellText(table[i][j], columnsLengths[j], this.attrs[`cell:${i},${j}`]) + " ".repeat(this.rightPadding);
+                        stringTable += this.borders.sep + " ".repeat(this.leftPadding) + getCellText(table[i][j], columnsLengths[j], this.attrs[`cell:${i},${j}`], this.attrs[`row:${i}`], this.attrs[`col:${j}`]) + " ".repeat(this.rightPadding);
                     }
                     stringTable += this.borders.sep;
                     if (this.horizontalLines && i < table.length - 1) {
@@ -347,6 +349,38 @@ class Table {
             if (Array.isArray(attrs.decorations)) attrs.decorations.forEach((name) => { if (!Object.keys(codesANSI.decorations).includes(name)) throw SyntaxError(`invalid decoration "${name}"`); });
             if (typeof attrs.align !== "undefined" && attrs.align !== "left" && attrs.align !== "center" && attrs.align !== "right") throw SyntaxError('attrs.align must be "left", "center", "right" or undefined');
             this.attrs[`cell:${row},${col}`] = attrs;
+        } else throw TypeError("attrs must be an object or undefined");
+    }
+
+    setRowAttrs(row, attrs) {
+        if (row >= this.rows.length) throw RangeError("row number out of range");
+        if (this.rows[row] === "HORIZONTAL LINE") throw SyntaxError("this row is horizontal line");
+        if (typeof attrs === "undefined") delete this.attrs[`row:${row}`];
+        else if (typeof attrs === "object") {
+            Object.keys(attrs).forEach((key) => { if (!["color", "bgColor", "decorations", "align"].includes(key)) throw SyntaxError(`invalid attribute "${key}"`); });
+            if (typeof attrs.color !== "string" && typeof attrs.color !== "undefined") throw TypeError("attrs.color must be a string or undefined");
+            if (typeof attrs.bgColor !== "string" && typeof attrs.bgColor !== "undefined") throw TypeError("attrs.bgColor must be a string or undefined");
+            if (!Array.isArray(attrs.decorations) && typeof attrs.decorations !== "undefined") throw TypeError("attrs.decorations must be an array or undefined");
+            if (typeof attrs.color === "string" && !codesANSI.foreground.hasOwnProperty(attrs.color)) throw SyntaxError("attrs.color is invalid");
+            if (typeof attrs.bgColor === "string" && !codesANSI.background.hasOwnProperty(attrs.bgColor)) throw SyntaxError("attrs.bgColor is invalid");
+            if (Array.isArray(attrs.decorations)) attrs.decorations.forEach((name) => { if (!Object.keys(codesANSI.decorations).includes(name)) throw SyntaxError(`invalid decoration "${name}"`); });
+            if (typeof attrs.align !== "undefined" && attrs.align !== "left" && attrs.align !== "center" && attrs.align !== "right") throw SyntaxError('attrs.align must be "left", "center", "right" or undefined');
+            this.attrs[`row:${row}`] = attrs;
+        } else throw TypeError("attrs must be an object or undefined");
+    }
+
+    setColAttrs(col, attrs) {
+        if (typeof attrs === "undefined") delete this.attrs[`col:${col}`];
+        else if (typeof attrs === "object") {
+            Object.keys(attrs).forEach((key) => { if (!["color", "bgColor", "decorations", "align"].includes(key)) throw SyntaxError(`invalid attribute "${key}"`); });
+            if (typeof attrs.color !== "string" && typeof attrs.color !== "undefined") throw TypeError("attrs.color must be a string or undefined");
+            if (typeof attrs.bgColor !== "string" && typeof attrs.bgColor !== "undefined") throw TypeError("attrs.bgColor must be a string or undefined");
+            if (!Array.isArray(attrs.decorations) && typeof attrs.decorations !== "undefined") throw TypeError("attrs.decorations must be an array or undefined");
+            if (typeof attrs.color === "string" && !codesANSI.foreground.hasOwnProperty(attrs.color)) throw SyntaxError("attrs.color is invalid");
+            if (typeof attrs.bgColor === "string" && !codesANSI.background.hasOwnProperty(attrs.bgColor)) throw SyntaxError("attrs.bgColor is invalid");
+            if (Array.isArray(attrs.decorations)) attrs.decorations.forEach((name) => { if (!Object.keys(codesANSI.decorations).includes(name)) throw SyntaxError(`invalid decoration "${name}"`); });
+            if (typeof attrs.align !== "undefined" && attrs.align !== "left" && attrs.align !== "center" && attrs.align !== "right") throw SyntaxError('attrs.align must be "left", "center", "right" or undefined');
+            this.attrs[`col:${col}`] = attrs;
         } else throw TypeError("attrs must be an object or undefined");
     }
 }
